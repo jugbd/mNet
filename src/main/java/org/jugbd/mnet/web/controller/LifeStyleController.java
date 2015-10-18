@@ -26,6 +26,10 @@ import javax.validation.Valid;
 @RequestMapping("lifestyle")
 public class LifeStyleController {
 
+    public static final String LIFESTYLE_CREATE_PAGE = "lifestyle/create";
+    public static final String REDIRECT_REGISTER_LIFESTYLE_PAGE = "redirect:/register/lifestyle/";
+    public static final String LIFESTYLE_EDIT_PAGE = "lifestyle/edit";
+
     @Autowired
     private LifeStyleService lifeStyleService;
 
@@ -37,7 +41,7 @@ public class LifeStyleController {
         Register register = registerService.findOne(registerId);
         lifeStyle.setRegister(register);
 
-        return "lifestyle/create";
+        return LIFESTYLE_CREATE_PAGE;
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
@@ -46,15 +50,14 @@ public class LifeStyleController {
 
         if (result.hasErrors()) {
 
-            return "lifestyle/create";
+            return LIFESTYLE_CREATE_PAGE;
         }
 
         LifeStyle lifeStyleSaved = lifeStyleService.save(lifeStyle);
         redirectAttributes.addFlashAttribute("message", "Life Style successfully created");
 
-        return "redirect:/register/lifestyle/" + lifeStyleSaved.getRegister().getId();
+        return REDIRECT_REGISTER_LIFESTYLE_PAGE + lifeStyleSaved.getRegister().getId();
     }
-
 
     @RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
     public String edit(@PathVariable Long id, Model uiModel) {
@@ -62,7 +65,7 @@ public class LifeStyleController {
 
         uiModel.addAttribute("lifeStyle", lifeStyle);
 
-        return "lifestyle/edit";
+        return LIFESTYLE_EDIT_PAGE;
     }
 
     @RequestMapping(value = "edit", method = RequestMethod.POST)
@@ -71,18 +74,18 @@ public class LifeStyleController {
                          RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
 
-            return "lifestyle/edit";
+            return LIFESTYLE_EDIT_PAGE;
         }
 
         LifeStyle savedLifeStyle = lifeStyleService.save(lifeStyle);
         redirectAttributes.addFlashAttribute("message", "Life Style successfully updated");
 
-        return "redirect:/register/lifestyle/" + savedLifeStyle.getRegister().getId();
+        return REDIRECT_REGISTER_LIFESTYLE_PAGE + savedLifeStyle.getRegister().getId();
     }
 
     @RequestMapping(value = "cancel/{registerId}", method = RequestMethod.GET)
     public String cancel(@PathVariable Long registerId) {
 
-        return "redirect:/register/lifestyle/" + registerService.findOne(registerId).getId();
+        return REDIRECT_REGISTER_LIFESTYLE_PAGE + registerId;
     }
 }

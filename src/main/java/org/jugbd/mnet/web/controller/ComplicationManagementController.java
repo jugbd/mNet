@@ -1,6 +1,5 @@
 package org.jugbd.mnet.web.controller;
 
-import org.jugbd.mnet.dao.RegisterDao;
 import org.jugbd.mnet.domain.ComplicationManagement;
 import org.jugbd.mnet.domain.Register;
 import org.jugbd.mnet.service.ComplicationManagementService;
@@ -25,21 +24,23 @@ import javax.validation.Valid;
 @Secured({"ROLE_ADMIN", "ROLE_USER"})
 @RequestMapping("complicationmanagement")
 public class ComplicationManagementController {
+
+    public static final String COMPLICATION_MANAGEMENT_CREATE_PAGE = "complicationmanagement/create";
+    public static final String COMPLICATION_MANAGEMENT_EDIT_PAGE = "complicationmanagement/edit";
+    public static final String REDIRECT_REGISTER_COMPLICATION_MANAGEMENT_PAGE = "redirect:/register/complicationmanagement/";
+
     @Autowired
     private ComplicationManagementService complicationManagementService;
 
     @Autowired
     private RegisterService registerService;
 
-    @Autowired
-    private RegisterDao registerDao;
-
     @RequestMapping(value = "create/{registerId}", method = RequestMethod.GET)
     public String create(@PathVariable Long registerId, ComplicationManagement complicationManagement) {
         Register register = registerService.findOne(registerId);
         complicationManagement.setRegister(register);
 
-        return "complicationmanagement/create";
+        return COMPLICATION_MANAGEMENT_CREATE_PAGE;
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
@@ -48,23 +49,22 @@ public class ComplicationManagementController {
 
         if (result.hasErrors()) {
 
-            return "complicationmanagement/create";
+            return COMPLICATION_MANAGEMENT_CREATE_PAGE;
         }
 
         ComplicationManagement complicationManagementSaved = complicationManagementService.save(complicationManagement);
-
         redirectAttributes.addFlashAttribute("message", "Complication Management successfully created");
-        return "redirect:/register/complicationmanagement/" + complicationManagementSaved.getRegister().getId();
+
+        return REDIRECT_REGISTER_COMPLICATION_MANAGEMENT_PAGE + complicationManagementSaved.getRegister().getId();
     }
 
 
     @RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
     public String edit(@PathVariable Long id, Model uiModel) {
         ComplicationManagement complicationManagement = complicationManagementService.findOne(id);
-
         uiModel.addAttribute("complicationManagement", complicationManagement);
 
-        return "complicationmanagement/edit";
+        return COMPLICATION_MANAGEMENT_EDIT_PAGE;
     }
 
     @RequestMapping(value = "edit", method = RequestMethod.POST)
@@ -73,29 +73,27 @@ public class ComplicationManagementController {
                          RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
 
-            return "complicationmanagement/edit";
+            return COMPLICATION_MANAGEMENT_EDIT_PAGE;
         }
 
         ComplicationManagement complicationManagementSaved = complicationManagementService.save(complicationManagement);
-
         redirectAttributes.addFlashAttribute("message", "Complication Management successfully updated");
-        return "redirect:/register/complicationmanagement/" + complicationManagementSaved.getRegister().getId();
+        
+        return REDIRECT_REGISTER_COMPLICATION_MANAGEMENT_PAGE + complicationManagementSaved.getRegister().getId();
     }
 
     @RequestMapping(value = "delete/{id}", method = RequestMethod.POST)
     public String delete(@PathVariable Long id) {
-        ComplicationManagement one = complicationManagementService.findOne(id);
-        Long registerId = one.getRegister().getId();
+        ComplicationManagement complicationManagement = complicationManagementService.findOne(id);
+        complicationManagementService.delete(complicationManagement);
 
-        complicationManagementService.delete(one);
-
-        return "redirect:/register/complicationmanagement/" + registerId;
+        return REDIRECT_REGISTER_COMPLICATION_MANAGEMENT_PAGE + complicationManagement.getRegister().getId();
     }
 
     @RequestMapping(value = "cancel/{registerId}", method = RequestMethod.GET)
     public String cancel(@PathVariable Long registerId) {
 
-        return "redirect:/register/complicationmanagement/" + registerDao.findOne(registerId).getId();
+        return REDIRECT_REGISTER_COMPLICATION_MANAGEMENT_PAGE + registerId;
     }
 
 }

@@ -5,8 +5,6 @@ import org.jugbd.mnet.domain.Register;
 import org.jugbd.mnet.domain.enums.Gender;
 import org.jugbd.mnet.service.MedicalHistoryService;
 import org.jugbd.mnet.service.RegisterService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -27,7 +25,10 @@ import javax.validation.Valid;
 @Secured({"ROLE_ADMIN", "ROLE_USER"})
 @RequestMapping("/medicalhistory")
 public class MedicalHistoryController {
-    private static Logger log = LoggerFactory.getLogger(MedicalHistoryController.class);
+    public static final String MEDICAL_HISTORY_CREATE_PAGE = "medicalhistory/create";
+    public static final String REDIRECT_REGISTER_MEDICAL_HISTORY_PAGE = "redirect:/register/medicalhistory/";
+    public static final String MEDICAL_HISTORY_SHOW_PAGE = "medicalhistory/show";
+    public static final String MEDICAL_HISTORY_EDIT_PAGE = "medicalhistory/edit";
 
     @Autowired
     private MedicalHistoryService medicalHistoryService;
@@ -45,7 +46,7 @@ public class MedicalHistoryController {
         boolean isFemale = gender == Gender.FEMALE;
         uiModel.addAttribute("isFemale", isFemale);
 
-        return "medicalhistory/create";
+        return MEDICAL_HISTORY_CREATE_PAGE;
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
@@ -55,22 +56,21 @@ public class MedicalHistoryController {
 
         if (result.hasErrors()) {
 
-            return "medicalhistory/create";
+            return MEDICAL_HISTORY_CREATE_PAGE;
         }
 
         MedicalHistory saveMedicalHistory = medicalHistoryService.save(medicalHistory);
         redirectAttributes.addFlashAttribute("message", "Medical History successfully created");
 
-        return "redirect:/register/medicalhistory/" + saveMedicalHistory.getRegister().getId();
+        return REDIRECT_REGISTER_MEDICAL_HISTORY_PAGE + saveMedicalHistory.getRegister().getId();
     }
 
     @RequestMapping(value = "show/{id}", method = RequestMethod.GET)
     public String show(@PathVariable Long id, Model uiModel) {
         uiModel.addAttribute("medicalHistory", medicalHistoryService.findOne(id));
 
-        return "medicalhistory/show";
+        return MEDICAL_HISTORY_SHOW_PAGE;
     }
-
 
     @RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
     public String edit(@PathVariable Long id, Model uiModel) {
@@ -82,22 +82,23 @@ public class MedicalHistoryController {
         boolean isFemale = gender == Gender.FEMALE;
         uiModel.addAttribute("isFemale", isFemale);
 
-        return "medicalhistory/edit";
+        return MEDICAL_HISTORY_EDIT_PAGE;
     }
 
     @RequestMapping(value = "edit", method = RequestMethod.POST)
     public String update(@Valid MedicalHistory medicalHistory,
                          BindingResult result,
                          RedirectAttributes redirectAttributes) {
+
         if (result.hasErrors()) {
 
-            return "medicalhistory/edit";
+            return MEDICAL_HISTORY_EDIT_PAGE;
         }
 
         MedicalHistory saveMedicalHistory = medicalHistoryService.save(medicalHistory);
         redirectAttributes.addFlashAttribute("message", "Medical History successfully updated");
 
-        return "redirect:/register/medicalhistory/" + saveMedicalHistory.getRegister().getId();
+        return REDIRECT_REGISTER_MEDICAL_HISTORY_PAGE + saveMedicalHistory.getRegister().getId();
     }
 
     @RequestMapping(value = "cancel/{registerId}", method = RequestMethod.GET)

@@ -26,6 +26,10 @@ import javax.validation.Valid;
 @RequestMapping("examination")
 public class ExaminationController {
 
+    public static final String EXAMINATION_CREATE_PAGE = "examination/create";
+    public static final String EXAMINATION_EDIT_PAGE = "examination/edit";
+    public static final String REDIRECT_REGISTER_EXAMINATION_PAGE = "redirect:/register/examination/";
+
     @Autowired
     private ExaminationService examinationService;
 
@@ -42,7 +46,7 @@ public class ExaminationController {
         registerService.findRegisterEither(registerId, registrationType)
                 .map(examination::setRegister, examination::setOutdoorRegister);
 
-        return "examination/create";
+        return EXAMINATION_CREATE_PAGE;
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
@@ -53,7 +57,7 @@ public class ExaminationController {
 
         if (result.hasErrors()) {
 
-            return "examination/create";
+            return EXAMINATION_CREATE_PAGE;
         }
 
         Examination examinationFromDb = examinationService.save(examination, registrationType);
@@ -71,7 +75,7 @@ public class ExaminationController {
         uiModel.addAttribute("examination", examination);
         uiModel.addAttribute("registrationType", registrationType);
 
-        return "examination/edit";
+        return EXAMINATION_EDIT_PAGE;
     }
 
     @RequestMapping(value = "edit", method = RequestMethod.POST)
@@ -82,7 +86,7 @@ public class ExaminationController {
 
         if (result.hasErrors()) {
 
-            return "examination/edit";
+            return EXAMINATION_EDIT_PAGE;
         }
 
         Examination examinationFromDb = examinationService.save(examination, registrationType);
@@ -94,15 +98,14 @@ public class ExaminationController {
     @RequestMapping(value = "cancel/{registerId}", method = RequestMethod.GET)
     public String cancel(@PathVariable Long registerId, @RequestParam RegistrationType registrationType) {
 
-        return "redirect:/register/examination/" + registerService.findOne(registerId).getId() + "?registrationType=" + registrationType;
+        return REDIRECT_REGISTER_EXAMINATION_PAGE + registerService.findOne(registerId).getId() + "?registrationType=" + registrationType;
     }
 
     private String getRedirectUrl(RegistrationType registrationType, Examination examination) {
-        String redirectUrl = "redirect:/register/examination/";
         String appender = "?registrationType=" + registrationType;
 
         return (registrationType == RegistrationType.OUTDOOR)
-                ? (String.format("%s%d%s", redirectUrl, examination.getOutdoorRegister().getId(), appender))
-                : (String.format("%s%d%s", redirectUrl, examination.getRegister().getId(), appender));
+                ? (String.format("%s%d%s", REDIRECT_REGISTER_EXAMINATION_PAGE, examination.getOutdoorRegister().getId(), appender))
+                : (String.format("%s%d%s", REDIRECT_REGISTER_EXAMINATION_PAGE, examination.getRegister().getId(), appender));
     }
 }

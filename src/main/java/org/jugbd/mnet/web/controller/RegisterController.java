@@ -32,6 +32,32 @@ import java.util.Set;
 public class RegisterController {
     private static final Logger log = LoggerFactory.getLogger(RegisterController.class);
 
+    public static final String REGISTER_CONVERT_PAGE = "register/convert";
+    public static final String REGISTER_CREATE_PAGE = "register/create";
+    public static final String REGISTER_OPD_PAGE = "register/opd";
+    public static final String REDIRECT_REGISTER_OPD = "redirect:/register/opd/";
+    public static final String REGISTER_IPD_PAGE = "register/ipd";
+    public static final String REDIRECT_REGISTER_IPD_PAGE = "redirect:/register/ipd/";
+    public static final String REGISTER_OPD_REGISTRATION_PAGE = "register/opd-registration";
+    public static final String REDIRECT_PATIENT_SHOW_PAGE = "redirect:/patient/show/";
+    public static final String REGISTER_OPD_EDIT_PAGE = "register/opd-edit";
+    public static final String REGISTER_DIAGNOSIS_PAGE = "register/diagnosis";
+    public static final String REGISTER_TREATMENT_PLAN_PAGE = "register/treatmentplan";
+    public static final String REGISTER_EXAMINATION_PAGE = "register/examination";
+    public static final String REGISTER_CHIEF_COMPLAINTS_PAGE = "register/chiefcomplaints";
+    public static final String REGISTER_VITAL_PAGE = "register/vital";
+    public static final String REGISTER_VISIT_NOTE_PAGE = "register/visit-note";
+    public static final String REGISTER_OUTCOME_PAGE = "register/outcome";
+    public static final String REDIRECT_REGISTER_OUTCOME_PAGE = "redirect:/register/outcome/";
+    public static final String REGISTER_REMARKS_PAGE = "register/remarks";
+    public static final String REDIRECT_REGISTER_REMARKS_PAGE = "redirect:/register/remarks/";
+    public static final String REGISTER_MEDICAL_HISTORY_PAGE = "register/medical-history";
+    public static final String REGISTER_OPERATIONAL_DETAIL_PAGE = "register/operational-detail";
+    public static final String REGISTER_INVESTIGATION_PAGE = "register/investigation";
+    public static final String REGISTER_COMPLICATION_MANAGEMENT_PAGE = "register/complicationmanagement";
+    public static final String REGISTER_LIFE_STYLE_PAGE = "register/life-style";
+    public static final String REGISTER_PICTURE_PAGE = "register/picture";
+
     @Autowired
     private PatientService patientService;
 
@@ -52,7 +78,7 @@ public class RegisterController {
         register.setPatient(patient);
         uiModel.addAttribute("register", register);
 
-        return "register/create";
+        return REGISTER_CREATE_PAGE;
     }
 
     @RequestMapping(value = "opd/{patientId}/new", method = RequestMethod.GET)
@@ -63,7 +89,7 @@ public class RegisterController {
         outdoorRegister.setPatient(patient);
         uiModel.addAttribute("outdoorRegister", outdoorRegister);
 
-        return "register/opd";
+        return REGISTER_OPD_PAGE;
     }
 
     @RequestMapping(value = "opd/save", method = RequestMethod.POST)
@@ -73,12 +99,12 @@ public class RegisterController {
 
         if (result.hasErrors()) {
 
-            return "register/opd";
+            return REGISTER_OPD_PAGE;
         }
 
         registerService.save(outdoorRegister);
 
-        return "redirect:/register/opd/" + outdoorRegister.getId();
+        return REDIRECT_REGISTER_OPD + outdoorRegister.getId();
     }
 
     @RequestMapping(value = "ipd/{patientId}/new", method = RequestMethod.GET)
@@ -88,7 +114,7 @@ public class RegisterController {
         register.setPatient(patient);
         uiModel.addAttribute("register", register);
 
-        return "register/ipd";
+        return REGISTER_IPD_PAGE;
     }
 
     @RequestMapping(value = "ipd/save", method = RequestMethod.POST)
@@ -98,19 +124,19 @@ public class RegisterController {
 
         if (result.hasErrors()) {
 
-            return "register/ipd";
+            return REGISTER_IPD_PAGE;
         }
 
         registerService.save(register);
 
-        return "redirect:/register/ipd/" + register.getId();
+        return REDIRECT_REGISTER_IPD_PAGE + register.getId();
     }
 
     @RequestMapping(value = "opd/{id}", method = RequestMethod.GET)
     public String openOpdRegistration(@PathVariable Long id, Model uiModel) {
         prepareData(id, RegistrationType.OUTDOOR, uiModel);
 
-        return "register/opd-registration";
+        return REGISTER_OPD_REGISTRATION_PAGE;
     }
 
     @RequestMapping(value = "ipd/{id}", method = RequestMethod.GET)
@@ -127,12 +153,12 @@ public class RegisterController {
 
         if (result.hasErrors()) {
 
-            return "register/create";
+            return REGISTER_CREATE_PAGE;
         }
 
         registerService.save(register);
 
-        return "redirect:/patient/show/" + register.getPatient().getId();
+        return REDIRECT_PATIENT_SHOW_PAGE + register.getPatient().getId();
     }
 
     @RequestMapping(value = "close/{registerId}", method = RequestMethod.POST)
@@ -145,7 +171,7 @@ public class RegisterController {
         Patient patient = registerService.findRegisterEither(registerId, registrationType)
                 .fold(Register::getPatient, OutdoorRegister::getPatient);
 
-        return "redirect:/patient/show/" + patient.getId();
+        return REDIRECT_PATIENT_SHOW_PAGE + patient.getId();
     }
 
 
@@ -153,7 +179,7 @@ public class RegisterController {
     public String cancel(@PathVariable(value = "patientId") Long patientId) {
         log.debug("cancel()");
 
-        return "redirect:/patient/show/" + patientId;
+        return REDIRECT_PATIENT_SHOW_PAGE + patientId;
     }
 
     @RequestMapping(value = "/edit/{registrationId}", method = RequestMethod.GET)
@@ -165,7 +191,7 @@ public class RegisterController {
             OutdoorRegister outdoorRegister = registerService.findOpdRegister(registrationId);
             uiModel.addAttribute("outdoorRegister", outdoorRegister);
 
-            return "register/opd-edit";
+            return REGISTER_OPD_EDIT_PAGE;
         } else {
             Register register = registerService.findOne(registrationId);
 
@@ -182,19 +208,19 @@ public class RegisterController {
 
         if (result.hasErrors()) {
 
-            return "register/opd-edit";
+            return REGISTER_OPD_EDIT_PAGE;
         }
 
         registerService.save(outdoorRegister);
 
-        return "redirect:/register/opd/" + outdoorRegister.getId();
+        return REDIRECT_REGISTER_OPD + outdoorRegister.getId();
     }
 
     @RequestMapping(value = "ipd/update", method = RequestMethod.POST)
     public String updateRegistration(@Valid Register register) {
         Register savedRegister = registerService.save(register);
 
-        return "redirect:/register/ipd/" + savedRegister.getId();
+        return REDIRECT_REGISTER_IPD_PAGE + savedRegister.getId();
     }
 
     //Diagnosis
@@ -207,7 +233,7 @@ public class RegisterController {
         uiModel.addAttribute("diagnosis", registerService.findDiagnosis(registerId, registrationType));
         prepareData(registerId, registrationType, uiModel);
 
-        return "register/diagnosis";
+        return REGISTER_DIAGNOSIS_PAGE;
     }
 
     //Plan of Rx
@@ -220,7 +246,7 @@ public class RegisterController {
         uiModel.addAttribute("treatmentPlan", registerService.findTreatmentPlan(registerId, registrationType));
         prepareData(registerId, registrationType, uiModel);
 
-        return "register/treatmentplan";
+        return REGISTER_TREATMENT_PLAN_PAGE;
     }
 
     //Examination
@@ -233,7 +259,7 @@ public class RegisterController {
         uiModel.addAttribute("examination", registerService.findExamination(registerId, registrationType));
         prepareData(registerId, registrationType, uiModel);
 
-        return "register/examination";
+        return REGISTER_EXAMINATION_PAGE;
     }
 
     //Cheif Complaints
@@ -245,7 +271,7 @@ public class RegisterController {
         uiModel.addAttribute("chiefcomplaints", registerService.findChiefcomplaints(registerId, registrationType));
         prepareData(registerId, registrationType, uiModel);
 
-        return "register/chiefcomplaints";
+        return REGISTER_CHIEF_COMPLAINTS_PAGE;
     }
 
     //vitals
@@ -257,7 +283,7 @@ public class RegisterController {
         uiModel.addAttribute("lastVital", registerService.getLastVital(registerId, registrationType));
         prepareData(registerId, registrationType, uiModel);
 
-        return "register/vital";
+        return REGISTER_VITAL_PAGE;
     }
 
     //Visit note
@@ -269,7 +295,7 @@ public class RegisterController {
         uiModel.addAttribute("visits", registerService.getVisits(registerId, registrationType));
         prepareData(registerId, registrationType, uiModel);
 
-        return "register/visit-note";
+        return REGISTER_VISIT_NOTE_PAGE;
     }
 
     //outcome
@@ -279,7 +305,7 @@ public class RegisterController {
                           Model uiModel) {
         prepareData(registerId, registrationType, uiModel);
 
-        return "register/outcome";
+        return REGISTER_OUTCOME_PAGE;
     }
 
     @RequestMapping(value = "/edit-outcome/{registerId}", method = RequestMethod.GET)
@@ -290,7 +316,7 @@ public class RegisterController {
         uiModel.addAttribute("edit", true);
         uiModel.addAttribute("registerId", registerId);
 
-        return "register/outcome";
+        return REGISTER_OUTCOME_PAGE;
     }
 
     @RequestMapping(value = "/edit-outcome/{registerId}", method = RequestMethod.POST)
@@ -301,7 +327,7 @@ public class RegisterController {
 
         registerService.saveOutcome(outcome, registerId, registrationType);
 
-        return "redirect:/register/outcome/" + registerId + "?registrationType=" + registrationType;
+        return REDIRECT_REGISTER_OUTCOME_PAGE + registerId + "?registrationType=" + registrationType;
     }
 
     //Remarks
@@ -311,7 +337,7 @@ public class RegisterController {
                           Model uiModel) {
         prepareData(registerId, registrationType, uiModel);
 
-        return "register/remarks";
+        return REGISTER_REMARKS_PAGE;
     }
 
     @RequestMapping(value = "/edit-remarks/{registerId}", method = RequestMethod.GET)
@@ -322,7 +348,7 @@ public class RegisterController {
         uiModel.addAttribute("edit", true);
         uiModel.addAttribute("registerId", registerId);
 
-        return "register/remarks";
+        return REGISTER_REMARKS_PAGE;
     }
 
     @RequestMapping(value = "/edit-remarks/{registerId}", method = RequestMethod.POST)
@@ -333,7 +359,7 @@ public class RegisterController {
 
         registerService.saveRemarks(remarks, registerId, registrationType);
 
-        return "redirect:/register/remarks/" + registerId + "?registrationType=" + registrationType;
+        return REDIRECT_REGISTER_REMARKS_PAGE + registerId + "?registrationType=" + registrationType;
     }
 
     // Convert OPD to IPD
@@ -353,7 +379,7 @@ public class RegisterController {
         uiModel.addAttribute("register", register);
         uiModel.addAttribute("registerId", registerId);
 
-        return "register/convert";
+        return REGISTER_CONVERT_PAGE;
     }
 
     @RequestMapping(value = "/convert-to-ipd/{registerId}", method = RequestMethod.POST)
@@ -364,19 +390,19 @@ public class RegisterController {
         if (result.hasErrors()) {
             uiModel.addAttribute("registerId", registerId);
 
-            return "register/convert";
+            return REGISTER_CONVERT_PAGE;
         }
 
         Register savedRegister = registerService.convertOutdoorRegisterToIndoorRegister(registerId, register);
 
-        return "redirect:/patient/show/" + savedRegister.getPatient().getId();
+        return REDIRECT_PATIENT_SHOW_PAGE + savedRegister.getPatient().getId();
     }
 
     @RequestMapping(value = "/medicalhistory/{registerId}", method = RequestMethod.GET)
     public String pastMedicalHistory(@PathVariable Long registerId, Model uiModel) {
         prepareData(registerId, RegistrationType.INDOOR, uiModel);
 
-        return "register/medical-history";
+        return REGISTER_MEDICAL_HISTORY_PAGE;
     }
 
     @RequestMapping(value = "/operationaldetail/{registerId}", method = RequestMethod.GET)
@@ -386,7 +412,7 @@ public class RegisterController {
 
         uiModel.addAttribute("operationaldetails", detailList);
 
-        return "register/operational-detail";
+        return REGISTER_OPERATIONAL_DETAIL_PAGE;
     }
 
     @RequestMapping(value = "/investigation/{registerId}", method = RequestMethod.GET)
@@ -396,7 +422,7 @@ public class RegisterController {
 
         uiModel.addAttribute("investigations", investigations);
 
-        return "register/investigation";
+        return REGISTER_INVESTIGATION_PAGE;
     }
 
     //complicationmanagement
@@ -404,21 +430,21 @@ public class RegisterController {
     public String complicationmanagement(@PathVariable Long registerId, Model uiModel) {
         prepareData(registerId, RegistrationType.INDOOR, uiModel);
 
-        return "register/complicationmanagement";
+        return REGISTER_COMPLICATION_MANAGEMENT_PAGE;
     }
 
     @RequestMapping(value = "/lifestyle/{registerId}", method = RequestMethod.GET)
     public String lifeStyle(@PathVariable Long registerId, Model uiModel) {
         prepareData(registerId, RegistrationType.INDOOR, uiModel);
 
-        return "register/life-style";
+        return REGISTER_LIFE_STYLE_PAGE;
     }
 
     @RequestMapping(value = "/picture/{registerId}", method = RequestMethod.GET)
     public String pictureInformation(@PathVariable Long registerId, Model uiModel) {
         prepareData(registerId, RegistrationType.INDOOR, uiModel);
 
-        return "register/picture";
+        return REGISTER_PICTURE_PAGE;
     }
 
     private void prepareData(@PathVariable Long registerId, RegistrationType registrationType, Model uiModel) {

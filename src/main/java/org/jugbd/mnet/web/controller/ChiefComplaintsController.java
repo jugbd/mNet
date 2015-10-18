@@ -26,7 +26,10 @@ import javax.validation.Valid;
 @RequestMapping("chiefcomplaints")
 public class ChiefComplaintsController {
 
-    public static final String REDIRECT_REGISTER_CHIEFCOMPLAINTS = "redirect:/register/chiefcomplaints/";
+    public static final String REDIRECT_REGISTER_CHIEF_COMPLAINTS_PAGE = "redirect:/register/chiefcomplaints/";
+    public static final String CHIEF_COMPLAINTS_CREATE_SHOW = "chiefcomplaints/create";
+    public static final String CHIEF_COMPLAINTS_EDIT_PAGE = "chiefcomplaints/edit";
+
     @Autowired
     private RegisterService registerService;
 
@@ -43,7 +46,7 @@ public class ChiefComplaintsController {
         registerService.findRegisterEither(registerId, registrationType)
                 .map(chiefComplaint::setRegister, chiefComplaint::setOutdoorRegister);
 
-        return "chiefcomplaints/create";
+        return CHIEF_COMPLAINTS_CREATE_SHOW;
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
@@ -54,7 +57,7 @@ public class ChiefComplaintsController {
 
         if (result.hasErrors()) {
 
-            return "chiefcomplaints/create";
+            return CHIEF_COMPLAINTS_CREATE_SHOW;
         }
 
         ChiefComplaint savedChiefComplaint = chiefComplaintService.save(chiefComplaint, registrationType);
@@ -73,7 +76,7 @@ public class ChiefComplaintsController {
         uiModel.addAttribute("chiefComplaint", chiefComplaint);
         uiModel.addAttribute("registrationType", registrationType);
 
-        return "chiefcomplaints/edit";
+        return CHIEF_COMPLAINTS_EDIT_PAGE;
     }
 
     @RequestMapping(value = "edit", method = RequestMethod.POST)
@@ -83,7 +86,7 @@ public class ChiefComplaintsController {
                          RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
 
-            return "chiefcomplaints/edit";
+            return CHIEF_COMPLAINTS_EDIT_PAGE;
         }
 
         ChiefComplaint savedChiefComplaint = chiefComplaintService.save(chiefComplaint, registrationType);
@@ -95,18 +98,14 @@ public class ChiefComplaintsController {
     @RequestMapping(value = "back/{registerId}", method = RequestMethod.GET)
     public String back(@PathVariable Long registerId, @RequestParam RegistrationType registrationType) {
 
-        String redirectUrl = REDIRECT_REGISTER_CHIEFCOMPLAINTS;
-        String appender = "?registrationType=" + registrationType;
-
-        return redirectUrl + registerId + appender;
+        return REDIRECT_REGISTER_CHIEF_COMPLAINTS_PAGE + registerId + "?registrationType=" + registrationType;
     }
 
     private String getRedirectUrl(RegistrationType registrationType, ChiefComplaint chiefComplaint) {
-        String redirectUrl = REDIRECT_REGISTER_CHIEFCOMPLAINTS;
         String appender = "?registrationType=" + registrationType;
 
         return (registrationType == RegistrationType.OUTDOOR)
-                ? (String.format("%s%d%s", redirectUrl, chiefComplaint.getOutdoorRegister().getId(), appender))
-                : (String.format("%s%d%s", redirectUrl, chiefComplaint.getRegister().getId(), appender));
+                ? (String.format("%s%d%s", REDIRECT_REGISTER_CHIEF_COMPLAINTS_PAGE, chiefComplaint.getOutdoorRegister().getId(), appender))
+                : (String.format("%s%d%s", REDIRECT_REGISTER_CHIEF_COMPLAINTS_PAGE, chiefComplaint.getRegister().getId(), appender));
     }
 }

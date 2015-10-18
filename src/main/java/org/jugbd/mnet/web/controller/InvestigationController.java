@@ -2,12 +2,8 @@ package org.jugbd.mnet.web.controller;
 
 import org.jugbd.mnet.domain.Investigation;
 import org.jugbd.mnet.domain.Register;
-import org.jugbd.mnet.domain.enums.Gender;
-import org.jugbd.mnet.domain.enums.Relationship;
 import org.jugbd.mnet.service.InvestigationService;
 import org.jugbd.mnet.service.RegisterService;
-import org.jugbd.mnet.web.editor.GenderEditor;
-import org.jugbd.mnet.web.editor.RelationshipEditor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.security.access.annotation.Secured;
@@ -34,6 +30,11 @@ import java.util.Date;
 @RequestMapping("investigation")
 public class InvestigationController {
 
+    public static final String INVESTIGATION_CREATE_PAGE = "investigation/create";
+    public static final String REDIRECT_INVESTIGATION_SHOW_PAGE = "redirect:/investigation/show/";
+    public static final String INVESTIGATION_EDIT_PAGE = "investigation/edit";
+    public static final String REDIRECT_REGISTER_INVESTIGATION_PAGE = "redirect:/register/investigation/";
+
     @Autowired
     private InvestigationService investigationService;
 
@@ -46,13 +47,12 @@ public class InvestigationController {
         binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"), true));
     }
 
-
     @RequestMapping(value = "create/{registerId}", method = RequestMethod.GET)
     public String create(@PathVariable Long registerId, Investigation investigation) {
         Register register = registerService.findOne(registerId);
         investigation.setRegister(register);
 
-        return "investigation/create";
+        return INVESTIGATION_CREATE_PAGE;
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
@@ -60,15 +60,14 @@ public class InvestigationController {
 
         if (result.hasErrors()) {
 
-            return "investigation/create";
+            return INVESTIGATION_CREATE_PAGE;
         }
 
         Investigation investigationSaved = investigationService.save(investigation);
 
         redirectAttributes.addFlashAttribute("message", "Investigation successfully created");
-        return "redirect:/investigation/show/" + investigationSaved.getId();
+        return REDIRECT_INVESTIGATION_SHOW_PAGE + investigationSaved.getId();
     }
-
 
     @RequestMapping(value = "show/{id}", method = RequestMethod.GET)
     public String show(@PathVariable Long id, Model uiModel) {
@@ -79,14 +78,13 @@ public class InvestigationController {
         return "investigation/show";
     }
 
-
     @RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
     public String edit(@PathVariable Long id, Model uiModel) {
         Investigation investigation = investigationService.findOne(id);
 
         uiModel.addAttribute("investigation", investigation);
 
-        return "investigation/edit";
+        return INVESTIGATION_EDIT_PAGE;
     }
 
     @RequestMapping(value = "edit", method = RequestMethod.POST)
@@ -95,18 +93,18 @@ public class InvestigationController {
                          RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
 
-            return "investigation/edit";
+            return INVESTIGATION_EDIT_PAGE;
         }
 
         Investigation saveInvestigationSaved = investigationService.save(investigation);
-
         redirectAttributes.addFlashAttribute("message", "Investigation successfully updated");
-        return "redirect:/investigation/show/" + saveInvestigationSaved.getId();
+
+        return REDIRECT_INVESTIGATION_SHOW_PAGE + saveInvestigationSaved.getId();
     }
 
     @RequestMapping(value = "cancel/{registerId}", method = RequestMethod.GET)
     public String back(@PathVariable Long registerId) {
 
-        return "redirect:/register/investigation/" + registerService.findOne(registerId).getId();
+        return REDIRECT_REGISTER_INVESTIGATION_PAGE + registerService.findOne(registerId).getId();
     }
 }

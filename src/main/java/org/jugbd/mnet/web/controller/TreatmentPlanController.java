@@ -28,7 +28,9 @@ import javax.validation.Valid;
 @RequestMapping(value = "treatmentplan")
 public class TreatmentPlanController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TreatmentPlanController.class);
-    public static final String REDIRECT_REGISTER_TREATMENTPLAN = "redirect:/register/treatmentplan/";
+    public static final String REDIRECT_TO_TREATMENT_PLAN_REGISTER = "redirect:/register/treatmentplan/";
+    public static final String TREATMENT_PLAN_CREATE_PAGE = "treatmentplan/create";
+    public static final String TREATMENT_PLAN_EDIT_PAGE = "treatmentplan/edit";
 
     @Autowired
     private RegisterService registerService;
@@ -46,7 +48,7 @@ public class TreatmentPlanController {
         registerService.findRegisterEither(registerId, registrationType)
                 .map(treatmentPlan::setRegister, treatmentPlan::setOutdoorRegister);
 
-        return "treatmentplan/create";
+        return TREATMENT_PLAN_CREATE_PAGE;
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
@@ -57,7 +59,7 @@ public class TreatmentPlanController {
 
         if (result.hasErrors()) {
 
-            return "treatmentplan/create";
+            return TREATMENT_PLAN_CREATE_PAGE;
         }
 
         TreatmentPlan treatmentPlanSaved = treatmentPlanService.save(treatmentPlan, registrationType);
@@ -75,7 +77,7 @@ public class TreatmentPlanController {
         uiModel.addAttribute("treatmentPlan", treatmentPlan);
         uiModel.addAttribute("registrationType", registrationType);
 
-        return "treatmentplan/edit";
+        return TREATMENT_PLAN_EDIT_PAGE;
     }
 
     @RequestMapping(value = "edit", method = RequestMethod.POST)
@@ -86,7 +88,7 @@ public class TreatmentPlanController {
 
         if (result.hasErrors()) {
 
-            return "treatmentplan/edit";
+            return TREATMENT_PLAN_EDIT_PAGE;
         }
 
         TreatmentPlan treatmentPlanSaved = treatmentPlanService.save(treatmentPlan, registrationType);
@@ -98,14 +100,14 @@ public class TreatmentPlanController {
     @RequestMapping(value = "back/{registerId}", method = RequestMethod.GET)
     public String back(@PathVariable Long registerId, @RequestParam RegistrationType registrationType) {
 
-        return REDIRECT_REGISTER_TREATMENTPLAN + registerId + "?registrationType=" + registrationType;
+        return REDIRECT_TO_TREATMENT_PLAN_REGISTER + registerId + "?registrationType=" + registrationType;
     }
 
     private String getRedirectUrl(RegistrationType registrationType, TreatmentPlan treatmentPlan) {
         String appender = "?registrationType=" + registrationType;
 
         return (registrationType == RegistrationType.OUTDOOR)
-                ? (String.format("%s%d%s", REDIRECT_REGISTER_TREATMENTPLAN, treatmentPlan.getOutdoorRegister().getId(), appender))
-                : (String.format("%s%d%s", REDIRECT_REGISTER_TREATMENTPLAN, treatmentPlan.getRegister().getId(), appender));
+                ? (String.format("%s%d%s", REDIRECT_TO_TREATMENT_PLAN_REGISTER, treatmentPlan.getOutdoorRegister().getId(), appender))
+                : (String.format("%s%d%s", REDIRECT_TO_TREATMENT_PLAN_REGISTER, treatmentPlan.getRegister().getId(), appender));
     }
 }

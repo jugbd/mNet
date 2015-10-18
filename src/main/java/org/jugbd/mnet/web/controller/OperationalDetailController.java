@@ -2,12 +2,8 @@ package org.jugbd.mnet.web.controller;
 
 import org.jugbd.mnet.domain.OperationalDetail;
 import org.jugbd.mnet.domain.Register;
-import org.jugbd.mnet.domain.enums.Gender;
-import org.jugbd.mnet.domain.enums.Relationship;
 import org.jugbd.mnet.service.OperationalDetailService;
 import org.jugbd.mnet.service.RegisterService;
-import org.jugbd.mnet.web.editor.GenderEditor;
-import org.jugbd.mnet.web.editor.RelationshipEditor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.security.access.annotation.Secured;
@@ -34,6 +30,12 @@ import java.util.Date;
 @RequestMapping("operationaldetail")
 public class OperationalDetailController {
 
+    public static final String OPERATIONAL_DETAIL_CREATE_PAGE = "operationaldetail/create";
+    public static final String OPERATIONAL_DETAIL_SHOW_PAGE = "operationaldetail/show";
+    public static final String OPERATIONAL_DETAIL_EDIT_PAGE = "operationaldetail/edit";
+    public static final String REDIRECT_OPERATIONAL_DETAIL_SHOW_PAGE = "redirect:/operationaldetail/show/";
+    public static final String REDIRECT_REGISTER_OPERATIONAL_DETAIL_PAGE = "redirect:/register/operationaldetail/";
+
     @Autowired
     private RegisterService registerService;
 
@@ -52,7 +54,7 @@ public class OperationalDetailController {
         Register register = registerService.findOne(registerId);
         operationalDetail.setRegister(register);
 
-        return "operationaldetail/create";
+        return OPERATIONAL_DETAIL_CREATE_PAGE;
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
@@ -62,13 +64,13 @@ public class OperationalDetailController {
 
         if (result.hasErrors()) {
 
-            return "operationaldetail/create";
+            return OPERATIONAL_DETAIL_CREATE_PAGE;
         }
 
         OperationalDetail operationalDetailSaved = operationalDetailService.save(operationalDetail);
         redirectAttributes.addFlashAttribute("message", "Operational Detail successfully created");
 
-        return "redirect:/operationaldetail/show/" + operationalDetailSaved.getId();
+        return REDIRECT_OPERATIONAL_DETAIL_SHOW_PAGE + operationalDetailSaved.getId();
     }
 
     @RequestMapping(value = "show/{id}", method = RequestMethod.GET)
@@ -76,7 +78,7 @@ public class OperationalDetailController {
         OperationalDetail operationalDetail = operationalDetailService.findOne(id);
         uiModel.addAttribute("operationalDetail", operationalDetail);
 
-        return "operationaldetail/show";
+        return OPERATIONAL_DETAIL_SHOW_PAGE;
     }
 
 
@@ -85,7 +87,7 @@ public class OperationalDetailController {
         OperationalDetail operationalDetail = operationalDetailService.findOne(id);
         uiModel.addAttribute("operationalDetail", operationalDetail);
 
-        return "operationaldetail/edit";
+        return OPERATIONAL_DETAIL_EDIT_PAGE;
     }
 
     @RequestMapping(value = "edit", method = RequestMethod.POST)
@@ -95,18 +97,18 @@ public class OperationalDetailController {
 
         if (result.hasErrors()) {
 
-            return "operationaldetail/edit";
+            return OPERATIONAL_DETAIL_EDIT_PAGE;
         }
 
         OperationalDetail operationalDetailSaved = operationalDetailService.save(operationalDetail);
         redirectAttributes.addFlashAttribute("message", "Operational Detail successfully updated");
 
-        return "redirect:/operationaldetail/show/" + operationalDetailSaved.getId();
+        return REDIRECT_OPERATIONAL_DETAIL_SHOW_PAGE + operationalDetailSaved.getId();
     }
 
     @RequestMapping(value = "cancel/{registerId}", method = RequestMethod.GET)
     public String cancel(@PathVariable Long registerId) {
 
-        return "redirect:/register/operationaldetail/" + registerService.findOne(registerId).getId();
+        return REDIRECT_REGISTER_OPERATIONAL_DETAIL_PAGE + registerId;
     }
 }

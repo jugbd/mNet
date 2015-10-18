@@ -5,7 +5,6 @@ import org.jugbd.mnet.domain.Attachment;
 import org.jugbd.mnet.domain.PictureInformation;
 import org.jugbd.mnet.domain.enums.PictureInformationType;
 import org.jugbd.mnet.service.PictureInformationService;
-import org.jugbd.mnet.service.RegisterService;
 import org.jugbd.mnet.utils.Contestant;
 import org.jugbd.mnet.utils.FileUtils;
 import org.slf4j.Logger;
@@ -33,8 +32,9 @@ import java.io.IOException;
 public class PictureInformationController {
     private Logger log = LoggerFactory.getLogger(PictureInformationController.class);
 
-    @Autowired
-    private RegisterService registerService;
+    public static final String PICTURE_SHOW_PAGE = "picture/show";
+    public static final String REDIRECT_PICTURE_PAGE = "redirect:/picture/";
+    public static final String REDIRECT_REGISTER_PICTURE_PAGE = "redirect:/register/picture/";
 
     @Autowired
     private PictureInformationService pictureInformationService;
@@ -50,7 +50,7 @@ public class PictureInformationController {
         uiModel.addAttribute("pictureInformation", pictureInformation);
         uiModel.addAttribute("register", pictureInformation.getRegister());
 
-        return "picture/show";
+        return PICTURE_SHOW_PAGE;
     }
 
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
@@ -59,8 +59,7 @@ public class PictureInformationController {
                               @RequestParam("fileName") String fileName,
                               @RequestParam("comment") String comment,
                               @RequestParam("registerId") Long registerId,
-                              RedirectAttributes redirectAttributes
-    ) throws IOException {
+                              RedirectAttributes redirectAttributes) throws IOException {
         log.debug("uploadPhoto() pictureInformationType ={}", pictureInformationType);
 
         String errorMsg = validate(file, Contestant.VALID_FILE_TYPE_LIST, Contestant.FILE_MAX_SIZE_BYTES, "Photo");
@@ -68,13 +67,13 @@ public class PictureInformationController {
         if (!errorMsg.isEmpty()) {
 
             redirectAttributes.addFlashAttribute("error", errorMsg);
-            return "picture/show";
+            return PICTURE_SHOW_PAGE;
         }
 
         pictureInformationService.upload(registerId, file, pictureInformationType, fileName, comment);
         redirectAttributes.addFlashAttribute("message", "File successfully uploaded");
 
-        return "redirect:/picture/" + registerId;
+        return REDIRECT_PICTURE_PAGE + registerId;
     }
 
     @RequestMapping(value = "picture/delete/{registerId}/{attachmentId}", method = RequestMethod.POST)
@@ -85,7 +84,7 @@ public class PictureInformationController {
 
         attachmentDao.save(attachment);
 
-        return "redirect:/picture/" + registerId;
+        return REDIRECT_PICTURE_PAGE + registerId;
     }
 
     private String validate(MultipartFile file, String[] validFileTypes, int maxFileSize, String field) {
@@ -107,6 +106,6 @@ public class PictureInformationController {
     @RequestMapping(value = "cancel/{registerId}", method = RequestMethod.GET)
     public String cancel(@PathVariable Long registerId) {
 
-        return "redirect:/register/picture/" + registerId;
+        return REDIRECT_REGISTER_PICTURE_PAGE + registerId;
     }
 }

@@ -29,6 +29,12 @@ import javax.validation.Valid;
 @Secured("ROLE_ADMIN")
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    public static final String USER_CREATE_PAGE = "user/create";
+    public static final String REDIRECT_USER_SHOW_PAGE = "redirect:/user/show/";
+    public static final String USER_INDEX_PAGE = "user/index";
+    public static final String USER_SHOW_PAGE = "user/show";
+    public static final String USER_EDIT_PAGE = "user/edit";
+    public static final String REDIRECT_USER_INDEX_PAGE = "redirect:/user";
 
     @Autowired
     private UserService userService;
@@ -42,7 +48,7 @@ public class UserController {
     @RequestMapping(value = "create", method = RequestMethod.GET)
     public String create(User user) {
 
-        return "user/create";
+        return USER_CREATE_PAGE;
     }
 
     @RequestMapping(value = "create", method = RequestMethod.POST)
@@ -52,19 +58,19 @@ public class UserController {
 
         if (result.hasErrors()) {
 
-            return "user/create";
+            return USER_CREATE_PAGE;
         }
 
         User userFound = userService.findByUserName(user.getUsername());
         if (userFound != null) {
             result.rejectValue("username", "error.user.username.already.available", "Its look like someone already has that username. Try another");
-            return "user/create";
+            return USER_CREATE_PAGE;
         }
 
         userService.save(user);
         redirectAttrs.addFlashAttribute("message", "Successfully user created");
 
-        return "redirect:/user/show/" + user.getId().toString();
+        return REDIRECT_USER_SHOW_PAGE + user.getId().toString();
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -74,7 +80,7 @@ public class UserController {
         PageWrapper<User> page = new PageWrapper<>(users, "/user");
         uiModel.addAttribute("page", page);
 
-        return "user/index";
+        return USER_INDEX_PAGE;
     }
 
     @RequestMapping(value = "show/{id}", method = RequestMethod.GET)
@@ -84,7 +90,7 @@ public class UserController {
         User user = userService.findById(id);
         uiModel.addAttribute("user", user);
 
-        return "user/show";
+        return USER_SHOW_PAGE;
     }
 
     @RequestMapping(value = "edit/{id}", method = RequestMethod.GET)
@@ -95,7 +101,7 @@ public class UserController {
         user.setPassword(null);
         uiModel.addAttribute("user", user);
 
-        return "user/edit";
+        return USER_EDIT_PAGE;
     }
 
     @RequestMapping(value = "update", method = RequestMethod.POST)
@@ -105,19 +111,19 @@ public class UserController {
         log.debug("update() user ={}", user);
 
         if (result.hasErrors()) {
-            return "user/edit";
+            return USER_EDIT_PAGE;
         }
 
         userService.save(user);
         redirectAttrs.addFlashAttribute("message", "Successfully user updated");
 
-        return "redirect:/user/show/" + user.getId().toString();
+        return REDIRECT_USER_SHOW_PAGE + user.getId().toString();
     }
 
     @RequestMapping(value = "cancel", method = RequestMethod.GET)
     public String cancel() {
         log.debug("cancel()");
 
-        return "redirect:/user";
+        return REDIRECT_USER_INDEX_PAGE;
     }
 }

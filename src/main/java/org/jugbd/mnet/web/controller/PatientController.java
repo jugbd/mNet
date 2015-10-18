@@ -45,6 +45,15 @@ import static org.jugbd.mnet.utils.StringUtils.isEmpty;
 public class PatientController {
     private static final Logger log = LoggerFactory.getLogger(PatientController.class);
 
+    public static final String PATIENT_CREATE_PAGE = "patient/create";
+    public static final String REDIRECT_PATIENT_SHOW_PAGE = "redirect:/patient/show/";
+    public static final String PATIENT_EDIT_PAGE = "patient/edit";
+    public static final String PATIENT_INDEX_PAGE = "patient/index";
+    public static final String PATIENT_SHOW_PAGE = "patient/show";
+    public static final String PATIENT_DETAILS_PAGE = "patient/details";
+    public static final String REDIRECT_PATIENT_LIST_PAGE = "redirect:/patient/list";
+    public static final String PATIENT_SEARCH_PAGE = "patient/search";
+
     @Autowired
     private PatientService patientService;
 
@@ -62,7 +71,7 @@ public class PatientController {
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String create(Patient patient, Model uiModel) {
 
-        return "patient/create";
+        return PATIENT_CREATE_PAGE;
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -72,13 +81,13 @@ public class PatientController {
 
         if (result.hasErrors()) {
 
-            return "patient/create";
+            return PATIENT_CREATE_PAGE;
         }
 
         patientService.create(patient);
         redirectAttributes.addFlashAttribute("message", "Patient successfully created");
 
-        return "redirect:/patient/show/" + patient.getId().toString();
+        return REDIRECT_PATIENT_SHOW_PAGE + patient.getId();
     }
 
     @RequestMapping(value = "/edit/{id}", method = RequestMethod.GET)
@@ -87,7 +96,7 @@ public class PatientController {
         Patient selectedPatient = patientService.findOne(id);
         uiModel.addAttribute("patient", selectedPatient);
 
-        return "patient/edit";
+        return PATIENT_EDIT_PAGE;
     }
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
@@ -97,14 +106,14 @@ public class PatientController {
 
         if (result.hasErrors()) {
 
-            return "patient/edit";
+            return PATIENT_EDIT_PAGE;
         }
 
         patientService.update(patient);
 
-        redirectAttributes.addFlashAttribute("message", String.format("Patient successfully updated"));
+        redirectAttributes.addFlashAttribute("message", "Patient successfully updated");
 
-        return "redirect:/patient/show/" + patient.getId().toString();
+        return REDIRECT_PATIENT_SHOW_PAGE + patient.getId().toString();
     }
 
     @RequestMapping(value = {"/", "/index", "/list"}, method = RequestMethod.GET)
@@ -114,7 +123,7 @@ public class PatientController {
         PageWrapper<Patient> page = new PageWrapper<>(patients, "/patient/list");
         uiModel.addAttribute("page", page);
 
-        return "patient/index";
+        return PATIENT_INDEX_PAGE;
     }
 
     @RequestMapping(value = "show/{id}", method = RequestMethod.GET)
@@ -144,7 +153,7 @@ public class PatientController {
         uiModel.addAttribute("hasActiveIndoor", hasActiveRegister);
         uiModel.addAttribute("hasActiveOutdoor", hasActiveOutdoorRegister);
 
-        return "patient/show";
+        return PATIENT_SHOW_PAGE;
     }
 
     @RequestMapping(value = "details/{id}", method = RequestMethod.GET)
@@ -152,14 +161,14 @@ public class PatientController {
 
         uiModel.addAttribute("patient", patientService.findOne(id));
 
-        return "patient/details";
+        return PATIENT_DETAILS_PAGE;
     }
 
     @RequestMapping(value = "cancel", method = RequestMethod.GET)
     public String cancel() {
         log.debug("cancel()");
 
-        return "redirect:/patient/list";
+        return REDIRECT_PATIENT_LIST_PAGE;
     }
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
@@ -168,7 +177,7 @@ public class PatientController {
 
         uiModel.addAttribute("patientSearchCmd", new PatientSearchCmd());
 
-        return "patient/search";
+        return PATIENT_SEARCH_PAGE;
     }
 
     @RequestMapping(value = "/display", method = RequestMethod.GET)
@@ -185,7 +194,7 @@ public class PatientController {
             uiModel.addAttribute("patientSearchCmd", patientSearchCmd);
             uiModel.addAttribute("error", "You can't leave these fields empty");
 
-            return "patient/search";
+            return PATIENT_SEARCH_PAGE;
         }
 
         Page patients = patientService.findPatientBySearchCmd(patientSearchCmd, pageable);
@@ -195,7 +204,7 @@ public class PatientController {
             uiModel.addAttribute("patientSearchCmd", patientSearchCmd);
             uiModel.addAttribute("notFound", "The patient Information you are looking for, doesn't exist!");
 
-            return "patient/search";
+            return PATIENT_SEARCH_PAGE;
         }
 
         PageWrapper<Patient> page = new PageWrapper<>(patients, "/patient/display" + getQueryString(patientSearchCmd));
@@ -204,7 +213,7 @@ public class PatientController {
 
         uiModel.addAttribute("page", page);
 
-        return "patient/index";
+        return PATIENT_INDEX_PAGE;
     }
 
     private String getQueryString(@ModelAttribute("patientSearchCmd") PatientSearchCmd patientSearchCmd) {

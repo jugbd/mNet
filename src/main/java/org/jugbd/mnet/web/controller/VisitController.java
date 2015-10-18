@@ -23,6 +23,9 @@ import javax.validation.Valid;
 @RequestMapping("visit")
 public class VisitController {
 
+    public static final String VISIT_CREATE_PAGE = "visit/create";
+    public static final String REDIRECT_REGISTER_VISITS_PAGE = "redirect:/register/visits/";
+
     @Autowired
     private RegisterService registerService;
 
@@ -40,7 +43,7 @@ public class VisitController {
         registerService.findRegisterEither(registerId, registrationType)
                 .map(visit::setRegister, visit::setOutdoorRegister);
 
-        return "visit/create";
+        return VISIT_CREATE_PAGE;
     }
 
     @RequestMapping(value = "new", method = RequestMethod.POST)
@@ -50,12 +53,12 @@ public class VisitController {
                                  Long registerId) {
         if (result.hasErrors()) {
 
-            return "visit/create";
+            return VISIT_CREATE_PAGE;
         }
 
         visitService.save(visit, registerId, registrationType);
 
-        return "redirect:/register/visits/" + registerId + "?registrationType=" + registrationType;
+        return REDIRECT_REGISTER_VISITS_PAGE + registerId + "?registrationType=" + registrationType;
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.POST)
@@ -63,6 +66,6 @@ public class VisitController {
                          @RequestParam(required = true) RegistrationType registrationType) {
         Long registrationId = visitService.delete(id, registrationType);
 
-        return "redirect:/register/visits/" + registrationId + "?registrationType=" + registrationType.name().toLowerCase();
+        return REDIRECT_REGISTER_VISITS_PAGE + registrationId + "?registrationType=" + registrationType.name().toLowerCase();
     }
 }

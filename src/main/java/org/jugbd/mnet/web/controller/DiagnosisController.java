@@ -28,7 +28,10 @@ import javax.validation.Valid;
 public class DiagnosisController {
 
     private static final Logger log = LoggerFactory.getLogger(DiagnosisController.class);
-    public static final String REDIRECT_REGISTER_DIAGNOSIS = "redirect:/register/diagnosis/";
+
+    public static final String REDIRECT_REGISTER_DIAGNOSIS_PAGE = "redirect:/register/diagnosis/";
+    public static final String DIAGNOSIS_CREATE_PAGE = "diagnosis/create";
+    public static final String DIAGNOSIS_EDIT_PAGE = "diagnosis/edit";
 
     @Autowired
     private DiagnosisService diagnosisService;
@@ -46,7 +49,7 @@ public class DiagnosisController {
         registerService.findRegisterEither(registerId, registrationType)
                 .map(diagnosis::setRegister, diagnosis::setOutdoorRegister);
 
-        return "diagnosis/create";
+        return DIAGNOSIS_CREATE_PAGE;
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -56,7 +59,7 @@ public class DiagnosisController {
 
         if (result.hasErrors()) {
 
-            return "diagnosis/create";
+            return DIAGNOSIS_CREATE_PAGE;
         }
 
         Diagnosis diagnosisFromDb = diagnosisService.save(diagnosis, registrationType);
@@ -74,9 +77,8 @@ public class DiagnosisController {
         uiModel.addAttribute("diagnosis", diagnosis);
         uiModel.addAttribute("registrationType", registrationType);
 
-        return "diagnosis/edit";
+        return DIAGNOSIS_EDIT_PAGE;
     }
-
 
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public String update(@RequestParam RegistrationType registrationType,
@@ -88,7 +90,7 @@ public class DiagnosisController {
         if (result.hasErrors()) {
             uiModel.addAttribute("registrationType", registrationType);
 
-            return "diagnosis/create";
+            return DIAGNOSIS_CREATE_PAGE;
         }
 
         Diagnosis diagnosisFromDb = diagnosisService.save(diagnosis, registrationType);
@@ -100,14 +102,14 @@ public class DiagnosisController {
     @RequestMapping(value = "/back/{registerId}", method = RequestMethod.GET)
     public String back(@PathVariable Long registerId, @RequestParam RegistrationType registrationType) {
 
-        return REDIRECT_REGISTER_DIAGNOSIS + registerId + "?registrationType=" + registrationType;
+        return REDIRECT_REGISTER_DIAGNOSIS_PAGE + registerId + "?registrationType=" + registrationType;
     }
 
     private String getRedirectUrl(RegistrationType registrationType, Diagnosis diagnosis) {
         String appender = "?registrationType=" + registrationType;
 
         return (registrationType == RegistrationType.OUTDOOR)
-                ? (String.format("%s%d%s", REDIRECT_REGISTER_DIAGNOSIS, diagnosis.getOutdoorRegister().getId(), appender))
-                : (String.format("%s%d%s", REDIRECT_REGISTER_DIAGNOSIS, diagnosis.getRegister().getId(), appender));
+                ? (String.format("%s%d%s", REDIRECT_REGISTER_DIAGNOSIS_PAGE, diagnosis.getOutdoorRegister().getId(), appender))
+                : (String.format("%s%d%s", REDIRECT_REGISTER_DIAGNOSIS_PAGE, diagnosis.getRegister().getId(), appender));
     }
 }
