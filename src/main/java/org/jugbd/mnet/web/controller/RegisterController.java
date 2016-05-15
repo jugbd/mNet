@@ -2,9 +2,11 @@ package org.jugbd.mnet.web.controller;
 
 import org.jugbd.mnet.domain.*;
 import org.jugbd.mnet.domain.enums.RegistrationType;
+import org.jugbd.mnet.exception.PatientNotFoundException;
 import org.jugbd.mnet.service.PatientService;
 import org.jugbd.mnet.service.RegisterService;
 import org.jugbd.mnet.utils.StringUtils;
+import org.jugbd.mnet.web.editor.CaseInsensitivePropertyEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -32,31 +35,31 @@ import java.util.Set;
 public class RegisterController {
     private static final Logger log = LoggerFactory.getLogger(RegisterController.class);
 
-    public static final String REGISTER_CONVERT_PAGE = "register/convert";
-    public static final String REGISTER_CREATE_PAGE = "register/create";
-    public static final String REGISTER_OPD_PAGE = "register/opd";
-    public static final String REDIRECT_REGISTER_OPD = "redirect:/register/opd/";
-    public static final String REGISTER_IPD_PAGE = "register/ipd";
-    public static final String REDIRECT_REGISTER_IPD_PAGE = "redirect:/register/ipd/";
-    public static final String REGISTER_OPD_REGISTRATION_PAGE = "register/opd-registration";
-    public static final String REDIRECT_PATIENT_SHOW_PAGE = "redirect:/patient/show/";
-    public static final String REGISTER_OPD_EDIT_PAGE = "register/opd-edit";
-    public static final String REGISTER_DIAGNOSIS_PAGE = "register/diagnosis";
-    public static final String REGISTER_TREATMENT_PLAN_PAGE = "register/treatmentplan";
-    public static final String REGISTER_EXAMINATION_PAGE = "register/examination";
-    public static final String REGISTER_CHIEF_COMPLAINTS_PAGE = "register/chiefcomplaints";
-    public static final String REGISTER_VITAL_PAGE = "register/vital";
-    public static final String REGISTER_VISIT_NOTE_PAGE = "register/visit-note";
-    public static final String REGISTER_OUTCOME_PAGE = "register/outcome";
-    public static final String REDIRECT_REGISTER_OUTCOME_PAGE = "redirect:/register/outcome/";
-    public static final String REGISTER_REMARKS_PAGE = "register/remarks";
-    public static final String REDIRECT_REGISTER_REMARKS_PAGE = "redirect:/register/remarks/";
-    public static final String REGISTER_MEDICAL_HISTORY_PAGE = "register/medical-history";
-    public static final String REGISTER_OPERATIONAL_DETAIL_PAGE = "register/operational-detail";
-    public static final String REGISTER_INVESTIGATION_PAGE = "register/investigation";
-    public static final String REGISTER_COMPLICATION_MANAGEMENT_PAGE = "register/complicationmanagement";
-    public static final String REGISTER_LIFE_STYLE_PAGE = "register/life-style";
-    public static final String REGISTER_PICTURE_PAGE = "register/picture";
+    private static final String REGISTER_CONVERT_PAGE = "register/convert";
+    private static final String REGISTER_CREATE_PAGE = "register/create";
+    private static final String REGISTER_OPD_PAGE = "register/opd";
+    private static final String REDIRECT_REGISTER_OPD = "redirect:/register/opd/";
+    private static final String REGISTER_IPD_PAGE = "register/ipd";
+    private static final String REDIRECT_REGISTER_IPD_PAGE = "redirect:/register/ipd/";
+    private static final String REGISTER_OPD_REGISTRATION_PAGE = "register/opd-registration";
+    private static final String REDIRECT_PATIENT_SHOW_PAGE = "redirect:/patient/show/";
+    private static final String REGISTER_OPD_EDIT_PAGE = "register/opd-edit";
+    private static final String REGISTER_DIAGNOSIS_PAGE = "register/diagnosis";
+    private static final String REGISTER_TREATMENT_PLAN_PAGE = "register/treatmentplan";
+    private static final String REGISTER_EXAMINATION_PAGE = "register/examination";
+    private static final String REGISTER_CHIEF_COMPLAINTS_PAGE = "register/chiefcomplaints";
+    private static final String REGISTER_VITAL_PAGE = "register/vital";
+    private static final String REGISTER_VISIT_NOTE_PAGE = "register/visit-note";
+    private static final String REGISTER_OUTCOME_PAGE = "register/outcome";
+    private static final String REDIRECT_REGISTER_OUTCOME_PAGE = "redirect:/register/outcome/";
+    private static final String REGISTER_REMARKS_PAGE = "register/remarks";
+    private static final String REDIRECT_REGISTER_REMARKS_PAGE = "redirect:/register/remarks/";
+    private static final String REGISTER_MEDICAL_HISTORY_PAGE = "register/medical-history";
+    private static final String REGISTER_OPERATIONAL_DETAIL_PAGE = "register/operational-detail";
+    private static final String REGISTER_INVESTIGATION_PAGE = "register/investigation";
+    private static final String REGISTER_COMPLICATION_MANAGEMENT_PAGE = "register/complicationmanagement";
+    private static final String REGISTER_LIFE_STYLE_PAGE = "register/life-style";
+    private static final String REGISTER_PICTURE_PAGE = "register/picture";
 
     @Autowired
     private PatientService patientService;
@@ -68,6 +71,7 @@ public class RegisterController {
     public void initBinder(WebDataBinder binder) {
 
         binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("dd/MM/yyyy"), true));
+        binder.registerCustomEditor(RegistrationType.class, new CaseInsensitivePropertyEditor<>(RegistrationType.class));
     }
 
     @RequestMapping(value = "patient/{patientId}", method = RequestMethod.GET)
@@ -80,6 +84,25 @@ public class RegisterController {
 
         return REGISTER_CREATE_PAGE;
     }
+
+    @RequestMapping(value = "patient/{patientId}/registration-type/{registrationType}", method = RequestMethod.GET)
+    public String registerNewPatient(@PathVariable Long patientId,
+                                     @PathVariable RegistrationType registrationType,
+                                     Register register) {
+        log.info("creating a new registration for patient id: {} with {}", patientId, registrationType.getLabel());
+
+        Optional<Patient> patientOptional = patientService.findPatientById(patientId);
+        if (patientOptional.isPresent()) {
+            Patient patient = patientOptional.get();
+            register.setPatient(patient);
+            register.setRegistrationType(registrationType);
+        } else {
+            throw new PatientNotFoundException(patientId);
+        }
+
+        return REGISTER_CREATE_PAGE;
+    }
+
 
     @RequestMapping(value = "opd/{patientId}/new", method = RequestMethod.GET)
     public String createOutPatient(@PathVariable(value = "patientId") Long patientId, Model uiModel) {

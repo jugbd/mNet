@@ -25,7 +25,7 @@
                             <legend th:text="#{heading.patient.emergency.contact}">Register Info</legend>
                             <input type="hidden" th:field="*{patient.id}"/>
 
-                            <div class="form-group">
+                            <div class="form-group ">
                                 <label for="patient-contact-name" class="col-sm-2 control-label">
                                     Contact Name
                                 </label>
@@ -98,7 +98,7 @@
                         <fieldset>
                             <legend>Admission Information</legend>
 
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <label class="col-sm-2 control-label" th:text="#{label.registration.number}">
                                     Registration Number </label>
 
@@ -111,7 +111,27 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+
+                            <div class="form-group required">
+                                <label class="col-sm-2 control-label"> Registration Type </label>
+
+                                <div class="col-sm-3">
+                                    <select class="form-control" th:field="*{registrationType}">
+                                        <option value="" th:text="#{common.select.prompt}"></option>
+                                        <option th:each="type : ${T(org.jugbd.mnet.domain.enums.RegistrationType).values()}"
+                                                th:value="${type}"
+                                                th:text="${type.label}"
+                                                th:selected="${type == register.registrationType}">
+                                        </option>
+                                    </select>
+
+                                    <p class="text-danger" th:if="${#fields.hasErrors('registrationType')}">
+                                        <span th:errors="*{registrationType}">Required</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="form-group required">
                                 <label class="col-sm-2 control-label" th:text="#{label.ward}"> Ward </label>
 
                                 <div class="col-sm-3">
@@ -131,12 +151,12 @@
                             </div>
 
                             <div id="wardOtherComment">
-                                <div class="form-group">
+                                <div class="form-group required">
                                     <label class="col-sm-2 control-label"
                                            th:text="#{label.ward.comment}">Comment </label>
 
                                     <div class="col-sm-3">
-                                        <input type="text" class="form-control input-sm" th:field="*{wardOther}"/>
+                                        <textarea type="text" class="form-control input-sm" th:field="*{wardOther}"></textarea>
 
                                         <p class="text-danger" th:if="${#fields.hasErrors('wardOther')}">
                                             <span th:errors="*{wardOther}">Required</span>
@@ -145,7 +165,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <label class="col-sm-2 control-label" th:text="#{label.registration.bedNumber}"> Bed
                                     Number </label>
 
@@ -158,7 +178,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <label class="col-sm-2 control-label" th:text="#{label.registration.unit}">
                                     Unit </label>
 
@@ -171,7 +191,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group required">
                                 <label class="col-sm-2 control-label" th:text="#{label.registration.admission.date}">
                                     Admission Date </label>
 
@@ -205,6 +225,12 @@
             th:src="@{/resources/js/bootstrap-datepicker.js}"></script>
     <script>
         jQuery(document).ready(function () {
+            enableCommentBox(false, "wardOtherComment");
+            enableCommentBox(false, "relationShipOtherComment");
+
+            addDropdownChangeEvent("ward", "wardOtherComment");
+            addDropdownChangeEvent("patientContact\\.relationship", "relationShipOtherComment");
+
             jQuery('#admissionDate').datepicker({
                 todayBtn: true,
                 keyboardNavigation: false,
@@ -215,11 +241,7 @@
             });
         });
 
-        enableCommentBox(false, "wardOtherComment");
-        enableCommentBox(false, "relationShipOtherComment");
 
-        addDropdownChangeEvent("ward", "wardOtherComment");
-        addDropdownChangeEvent("patientContact\\.relationship", "relationShipOtherComment");
 
         function addDropdownChangeEvent(selectId, commentDiv) {
             jQuery("#" + selectId).change(function () {

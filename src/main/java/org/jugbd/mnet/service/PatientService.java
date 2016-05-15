@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author ronygomes
@@ -15,6 +16,8 @@ public interface PatientService {
     Patient create(Patient patient);
 
     Patient findOne(Long id);
+
+    Optional<Patient> findPatientById(Long id);
 
     List<Patient> findAll();
 

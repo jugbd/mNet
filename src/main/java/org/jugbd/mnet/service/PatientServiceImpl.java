@@ -22,10 +22,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.jugbd.mnet.domain.QDiagnosis.diagnosis;
 import static org.jugbd.mnet.domain.QDiagnosisData.diagnosisData;
@@ -80,6 +77,14 @@ public class PatientServiceImpl implements PatientService {
     public Patient findOne(Long id) {
 
         return patientDao.findOne(id);
+    }
+
+    //TODO work spring data repository to return optional value
+    @Override
+    public Optional<Patient> findPatientById(Long id) {
+        Patient one = patientDao.findOne(id);
+
+        return Optional.ofNullable(one);
     }
 
     @Override

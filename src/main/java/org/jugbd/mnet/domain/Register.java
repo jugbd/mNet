@@ -2,6 +2,7 @@ package org.jugbd.mnet.domain;
 
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.jugbd.mnet.domain.enums.RegistrationType;
 import org.jugbd.mnet.domain.enums.Status;
 import org.jugbd.mnet.domain.enums.Ward;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -41,6 +42,11 @@ public class Register extends PersistentObject {
     @Column(length = 10)
     @Enumerated(EnumType.STRING)
     private Ward ward;
+
+    @NotNull(message = "Registration type is required")
+    @Column(length = 20)
+    @Enumerated(value = EnumType.STRING)
+    private RegistrationType registrationType;
 
     @Size(max = 100)
     @Column(length = 100)
@@ -326,6 +332,15 @@ public class Register extends PersistentObject {
 
     public Register setOutdoorRegister(Long outdoorRegister) {
         this.outdoorRegister = outdoorRegister;
+        return this;
+    }
+
+    public RegistrationType getRegistrationType() {
+        return registrationType;
+    }
+
+    public Register setRegistrationType(RegistrationType registrationType) {
+        this.registrationType = registrationType;
         return this;
     }
 

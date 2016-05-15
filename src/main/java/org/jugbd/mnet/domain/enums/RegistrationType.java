@@ -5,7 +5,7 @@ package org.jugbd.mnet.domain.enums;
  * @date 10/3/15.
  */
 public enum RegistrationType {
-    OUTDOOR("Outpatient"), INDOOR("Inpatient");
+    OUTDOOR("Outpatient"), INDOOR("Inpatient"), EMERGENCY("Emergency Indoor"), GENERAL("General Indoor");
 
     private String label;
 
