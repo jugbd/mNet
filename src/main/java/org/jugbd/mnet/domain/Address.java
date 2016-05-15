@@ -19,17 +19,14 @@ public class Address {
 
     @Size(max = 256)
     @Column(length = 256)
-    @NotEmpty
     private String homeAddress;
 
     @Size(max = 32)
     @Column(length = 32)
-    @NotEmpty
     private String policeStation;
 
     @Size(max = 32)
     @Column(length = 32)
-    @NotEmpty
     private String postOffice;
 
     @NotNull
