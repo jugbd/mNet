@@ -1,1 +1,0 @@
-ALTER TABLE register ADD outdoor_register_blnk BIGINT NULL;

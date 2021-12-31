@@ -1,1 +1,0 @@
-ALTER TABLE mnet.treatment_plan ADD other_treatment_plan_type VARCHAR(512) NOT NULL;

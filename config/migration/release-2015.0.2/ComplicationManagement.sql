@@ -1,1 +1,0 @@
-ALTER TABLE mnet.complication_management ADD register_id_bklink BIGINT NULL;

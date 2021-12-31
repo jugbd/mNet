@@ -1,1 +1,0 @@
-ALTER TABLE mnet.chief_complaint ADD child_born_with_other VARCHAR(100) NULL;

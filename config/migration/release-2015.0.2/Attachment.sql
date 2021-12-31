@@ -1,1 +1,0 @@
-ALTER TABLE mnet.attachment ADD deleted BOOLEAN DEFAULT FALSE  NULL;
